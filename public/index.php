@@ -26,11 +26,12 @@
                    title='Иван Приарит'></div>
         <div class="form-group">
             <label for="txtFormEmail">Введите Ваш email</label>
-            <input name="txtFormEmail" id="txtFormEmail" type="email" class="form-control" placeholder="example.email@gmail.com" required
+            <input name="txtFormEmail" id="txtFormEmail" type="email" class="form-control"
+                   placeholder="example.email@gmail.com" required
                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" title="example.email@gmail.com"/></div>
         <div class="form-group">
             <label for="txtFormMessage">Введите вашe сообщение</label>
-            <input name="txtFormMessage"  class="form-control" title="Не может быть пустым"
+            <input name="txtFormMessage" class="form-control" title="Не может быть пустым"
                    placeholder="Ваше сообщение" required></div>
         <label for="fileAttach">Прикрепите файл с макетом</label>
         <input name="fileAttach" type="file" required>
@@ -43,7 +44,6 @@
 </html>
 
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $app = new Silex\Application();
@@ -53,26 +53,24 @@ $app['debug'] = true;
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
-        'driver'   => 'pdo_mysql',
-        'host'      => 'localhost',
-        //'path'     => __DIR__.'/app.db',
-        'user'      => 'root',
-        'password'  => '0'
-
+        'host' => 'localhost',
+        'dbname' => 'molinos',
+        'user' => 'root',
+        'password' => '',
+        'driver' => 'pdo_mysql',
+        'charset' => 'utf8mb4',
     ),
 ));
+
+foreach ($app['db']->fetchAll('SELECT * FROM feedback') as $row) {
+    print_r($row);
+}
+
 
 $app->get('/', function () use ($toys) {
     return json_encode($toys);
 });
 
-$app->get('/{stockcode}', function (Silex\Application $app, $stockcode) use ($toys) {
-    if (!isset($toys[$stockcode])) {
-        $app->abort(404, "Stockcode {$stockcode} does not exist.");
-    }
-    return json_encode($toys[$stockcode]);
-});
 
-$app->run();
-?>
+
 
