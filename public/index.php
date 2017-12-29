@@ -10,20 +10,24 @@ $app->post('/feedback', function () use ($app) {
     if ($_POST['invisible'] != '') {
         die('Ботам - нет!');
     }
-    $files_folder = "c:/OpenServer/domains/molinos/public/files/";
 
-    if ($_FILES["userfile"]["size"] > 1024 * 3 * 1024) {
-        echo("Размер файла превышает три мегабайта");
-        exit;
+    if (!empty($_FILES["userfile"]["name"])){
+        $files_folder = "c:/OpenServer/domains/molinos/public/files/";
+
+        if ($_FILES["userfile"]["size"] > 1024 * 3 * 1024) {
+            echo("Размер файла превышает три мегабайта");
+            exit;
+        }
+        if (is_uploaded_file($_FILES["userfile"]["tmp_name"])) {
+            $file_path = $files_folder . $_FILES["userfile"]["name"];
+            move_uploaded_file($_FILES["userfile"]["tmp_name"], $files_folder . $_FILES["userfile"]["name"]);
+            echo '<div class="alert alert-success" id="flash_notice">Файл загружен!</div>';
+        } else {
+            echo("Ошибка загрузки файла. Выберите размер поменьше");
+            exit;
+        }
     }
-    if (is_uploaded_file($_FILES["userfile"]["tmp_name"])) {
-        $file_path = $files_folder . $_FILES["userfile"]["name"];
-        move_uploaded_file($_FILES["userfile"]["tmp_name"], $files_folder . $_FILES["userfile"]["name"]);
-        echo 'Файл загружен!';
-    } else {
-        echo("Ошибка загрузки файла. Выберите размер поменьше");
-        exit;
-    }
+
     $name = $_POST['txtFormName'];
     $email = $_POST['txtFormEmail'];
     $message = $_POST['txtFormMessage'];
@@ -57,7 +61,6 @@ $app->post('/feedback', function () use ($app) {
     return '<div class="alert alert-success" id="flash_notice">Ваше сообщение отправлено. Спасибо!</div>';
 })
     ->bind('new_feedback');
-
 
 
 $app->run();
