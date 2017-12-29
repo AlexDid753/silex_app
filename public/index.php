@@ -1,51 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head>
-<body class="container">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
-      integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-<link rel="stylesheet" href="custom.css">
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
-        integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
-        integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
-        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>
 <?php
+include_once 'header.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-$app = new Silex\Application();
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-    'db.options' => array(
-        'host' => 'localhost',
-        'dbname' => 'molinos',
-        'user' => 'root',
-        'password' => '',
-        'driver' => 'pdo_mysql',
-        'charset' => 'utf8mb4',
-    ),
-));
 $app->register(new Silex\Provider\SwiftmailerServiceProvider());
-
-$app['debug'] = true;
-
-$app->get('/', function () use ($app) {
-    return '';
-});
 
 
 $app->post('/feedback', function (Request $request) use ($app) {
 
-    $message = $request->get('message');
-    mail('alex.didenko753@gmail.com', '[YourSite] Feedback', $message);
     $name = $_POST['txtFormName'];
     $email = $_POST['txtFormEmail'];
     $message = $_POST['txtFormMessage'];
@@ -69,16 +30,10 @@ $app->post('/feedback', function (Request $request) use ($app) {
         ->setTo('alex.didenko753@gmail.com')
         ->setBody('Есть новая заявка на обратную связь. Проверьте в админской панели.', 'text/html');
 
-    /*
-    $message = \Swift_Message::newInstance()
-        ->setSubject('Molinos Feedback')
-        ->setFrom(array('noreply@molinos.com'))
-        ->setTo(array('alex.didenko753@gmail.com'))
-        ->setBody($request->get('Есть новая заявка на обратную связь. Проверьте в админской панели.'));
-*/
+
     $app['mailer']->send($message);
 
-    return '<div>Ваше сообщение отправлено. Спасибо!</div>';
+    return '<div class="alert alert-success" id="flash_notice">Ваше сообщение отправлено. Спасибо!</div>';
 })
     ->bind('new_feedback');
 
@@ -91,12 +46,12 @@ $app->run();
     <form action="index.php/feedback" method="post" name="form1" enctype="multipart/form-data">
         <div class="form-group">
             <label for="txtFormName">Введите ваше имя</label>
-            <input name="txtFormName" type="text" class="form-control" required placeholder="Иван Приарит"
+            <input name="txtFormName" type="text" class="form-control" required placeholder="Семен Петрович"
                    title='Семен Петрович'></div>
         <div class="form-group">
             <label for="txtFormEmail">Введите Ваш email</label>
             <input name="txtFormEmail" id="txtFormEmail" type="email" class="form-control"
-                   placeholder="example.email@gmail.com" required
+                   placeholder="example@email.com" required
                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" title="example.email@gmail.com"/></div>
         <div class="form-group">
             <label for="txtFormMessage">Введите вашe сообщение</label>
