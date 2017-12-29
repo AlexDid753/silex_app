@@ -35,6 +35,10 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 $app = new Silex\Application();
+$app->register(new \Silex\Provider\MonologServiceProvider(), array(
+    'monolog.logfile' => 'php://stderr',
+    'monolog.level' => \Monolog\Logger::WARNING,
+));
 Request::enableHttpMethodParameterOverride();
 
 $app->register(new Silex\Provider\RoutingServiceProvider());
