@@ -1,2 +1,2 @@
 <?php
-$app->mount("/users", new \MyApp\Controller\Provider\User());
+$app->mount("/feedback", new \MyApp\Controller\Provider\User());
