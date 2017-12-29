@@ -44,10 +44,10 @@ Request::enableHttpMethodParameterOverride();
 $app->register(new Silex\Provider\RoutingServiceProvider());
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array(
-        'host' => 'localhost',
+        'host' => 'localhost:3306',
         'dbname' => 'molinos',
-        'user' => 'root',
-        'password' => '',
+        'user' => 'molinosx',
+        'password' => 'I8p3kb1gZ8',
         'driver' => 'pdo_mysql',
         'charset' => 'utf8mb4',
     ),
