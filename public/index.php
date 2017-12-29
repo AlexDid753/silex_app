@@ -5,16 +5,30 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $app->register(new Silex\Provider\SwiftmailerServiceProvider());
 
 
-$app->post('/feedback', function (Request $request) use ($app) {
+$app->post('/feedback', function () use ($app) {
 
+    $files_folder = "c:/OpenServer/domains/molinos/public/files/";
+    var_dump($_FILES["userfile"]);
+    if($_FILES["userfile"]["size"] > 1024*3*1024)
+    {
+        echo ("Размер файла превышает три мегабайта");
+        exit;
+    }
+    if(is_uploaded_file($_FILES["userfile"]["tmp_name"]))
+    {
+        $file_path = $files_folder.$_FILES["userfile"]["name"];
+        move_uploaded_file($_FILES["userfile"]["tmp_name"], $files_folder.$_FILES["userfile"]["name"]);
+        echo 'Файл загружен!';
+    } else {
+        echo("Ошибка загрузки файла. Выберите размер поменьше");
+        exit;
+    }
     $name = $_POST['txtFormName'];
     $email = $_POST['txtFormEmail'];
     $message = $_POST['txtFormMessage'];
-    $sql = "INSERT INTO feedback(name, email, message) VALUES ('$name','$email','$message')";
+    $sql = "INSERT INTO feedback(name, email, message, file) VALUES ('$name','$email','$message','$file_path')";
     $app['db']->exec($sql);
 
-    /*mail("alex.didenko753@gmail.com", "the subject", $message,
-        "From: webmaster@example.com \r\n");*/
     $app['swiftmailer.options'] = array(
         'host' => 'smtp.yandex.ru',
         'port' => '465',
@@ -33,6 +47,14 @@ $app->post('/feedback', function (Request $request) use ($app) {
 
     $app['mailer']->send($message);
 
+
+
+
+    $uploaddir = 'c:/OpenServer/domains/molinos/public/files/';
+    $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
+    move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile);
+
+
     return '<div class="alert alert-success" id="flash_notice">Ваше сообщение отправлено. Спасибо!</div>';
 })
     ->bind('new_feedback');
@@ -44,6 +66,7 @@ $app->run();
 <h1 class="row justify-content-md-center">Форма обратной связи</h1>
 <div class="col-md-6 offset-md-3">
     <form action="index.php/feedback" method="post" name="form1" enctype="multipart/form-data">
+        <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
         <div class="form-group">
             <label for="txtFormName">Введите ваше имя</label>
             <input name="txtFormName" type="text" class="form-control" required placeholder="Семен Петрович"
@@ -57,33 +80,14 @@ $app->run();
             <label for="txtFormMessage">Введите вашe сообщение</label>
             <input name="txtFormMessage" class="form-control" title="Не может быть пустым"
                    placeholder="Ваше сообщение" required></div>
-        <label for="fileAttach">Прикрепите файл</label>
-        <input name="fileAttach" type="file">
+        <label for="userfile">Прикрепите файл</label>
+        <input id="userfile" name="userfile" type="file">
         <br>
         <br>
         <input type="submit" name="Submit" value="ОТПРАВИТЬ" class="btn btn-danger btn-block">
     </form>
 </div>
 </body>
-
-
-<div class="feedback_table">
-    <table class="table">
-        <tr>
-            <th>Имя отправителя</th>
-            <th>Email</th>
-            <th>Сообщение</th>
-        </tr>
-
-        <?php foreach ($app['db']->fetchAll('SELECT * FROM feedback') as $row) : ?>
-            <tr>
-                <td><?= $row['name'] ?></td>
-                <td><?= $row['email'] ?></td>
-                <td><?= $row['message'] ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-</div>
 
 
 </html>

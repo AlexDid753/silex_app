@@ -10,17 +10,24 @@ $app->run();
             <th>Имя отправителя</th>
             <th>Email</th>
             <th>Сообщение</th>
-            <th></th>
+            <th>Файл</th>
             <th></th>
         </tr>
 
         <?php foreach ($app['db']->fetchAll('SELECT * FROM feedback') as $row) : ?>
             <?php $request = Request::create($app['url_generator']->generate('delete_feedback',
-                array('id' => $row['ID'])), 'DELETE'); ?>
+                array('id' => $row['ID'])), 'DELETE');
+            $full_path = $row['file'];
+            $file_name = end(explode("/", $full_path));
+            if (!isset($full_path)){
+
+
+            } ?>
             <tr>
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['email'] ?></td>
                 <td><?= $row['message'] ?></td>
+                <td><?= '<a href="/public/files/'.$file_name.'">'.$file_name.'</a>'?></td>
                 <td>
                     <?= '<a rel="nofollow" class="btn btn-link" data-method="delete"  href="' . $app['url_generator']->generate('delete_feedback', array('id' => $row['ID'])) . '">Удалить запись</a>'; ?>
                 </td>
