@@ -7,17 +7,18 @@ $app->register(new Silex\Provider\SwiftmailerServiceProvider());
 
 $app->post('/feedback', function () use ($app) {
 
+    if ($_POST['invisible'] != '') {
+        die('Ботам - нет!');
+    }
     $files_folder = "c:/OpenServer/domains/molinos/public/files/";
     var_dump($_FILES["userfile"]);
-    if($_FILES["userfile"]["size"] > 1024*3*1024)
-    {
-        echo ("Размер файла превышает три мегабайта");
+    if ($_FILES["userfile"]["size"] > 1024 * 3 * 1024) {
+        echo("Размер файла превышает три мегабайта");
         exit;
     }
-    if(is_uploaded_file($_FILES["userfile"]["tmp_name"]))
-    {
-        $file_path = $files_folder.$_FILES["userfile"]["name"];
-        move_uploaded_file($_FILES["userfile"]["tmp_name"], $files_folder.$_FILES["userfile"]["name"]);
+    if (is_uploaded_file($_FILES["userfile"]["tmp_name"])) {
+        $file_path = $files_folder . $_FILES["userfile"]["name"];
+        move_uploaded_file($_FILES["userfile"]["tmp_name"], $files_folder . $_FILES["userfile"]["name"]);
         echo 'Файл загружен!';
     } else {
         echo("Ошибка загрузки файла. Выберите размер поменьше");
@@ -48,8 +49,6 @@ $app->post('/feedback', function () use ($app) {
     $app['mailer']->send($message);
 
 
-
-
     $uploaddir = 'c:/OpenServer/domains/molinos/public/files/';
     $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
     move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile);
@@ -66,7 +65,7 @@ $app->run();
 <h1 class="row justify-content-md-center">Форма обратной связи</h1>
 <div class="col-md-6 offset-md-3">
     <form action="index.php/feedback" method="post" name="form1" enctype="multipart/form-data">
-        <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+        <input type="hidden" name="MAX_FILE_SIZE" value="30000"/>
         <div class="form-group">
             <label for="txtFormName">Введите ваше имя</label>
             <input name="txtFormName" type="text" class="form-control" required placeholder="Семен Петрович"
@@ -84,6 +83,7 @@ $app->run();
         <input id="userfile" name="userfile" type="file">
         <br>
         <br>
+        <input type="text" name="invisible" id="invisible" value="">
         <input type="submit" name="Submit" value="ОТПРАВИТЬ" class="btn btn-danger btn-block">
     </form>
 </div>

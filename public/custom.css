@@ -4,3 +4,6 @@
 .page_title{
     text-decoration: underline;
 }
+#invisible {
+    display: none;
+}
