@@ -11,7 +11,7 @@ $app->post('/feedback', function () use ($app) {
         die('Ботам - нет!');
     }
     $files_folder = "c:/OpenServer/domains/molinos/public/files/";
-    var_dump($_FILES["userfile"]);
+
     if ($_FILES["userfile"]["size"] > 1024 * 3 * 1024) {
         echo("Размер файла превышает три мегабайта");
         exit;
@@ -58,13 +58,15 @@ $app->post('/feedback', function () use ($app) {
 })
     ->bind('new_feedback');
 
+
+
 $app->run();
 
 
 ?>
 <h1 class="row justify-content-md-center">Форма обратной связи</h1>
 <div class="col-md-6 offset-md-3">
-    <form action="index.php/feedback" method="post" name="form1" enctype="multipart/form-data">
+    <form action="/public/index.php/feedback" method="post" name="form1" enctype="multipart/form-data">
         <input type="hidden" name="MAX_FILE_SIZE" value="30000"/>
         <div class="form-group">
             <label for="txtFormName">Введите ваше имя</label>
